@@ -475,7 +475,7 @@ void DrawImguiMenus()
 			std::shared_ptr<PointLight> l = scene->GetLight(activeLight);
 
 			
-
+			///
 			glm::vec3 lightColor = l->GetColor();
 			if (ImGui::ColorEdit3("Light Color", (float*)&lightColor))
 			{
