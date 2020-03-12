@@ -173,6 +173,15 @@ void ShaderProgram::setUniform(const GLchar* name, const glm::vec3& v)
 }
 
 //-----------------------------------------------------------------------------
+// Sets a glm::vec3 array shader uniform
+//-----------------------------------------------------------------------------
+void ShaderProgram::setUniform(const GLchar* name, const glm::vec3* v)
+{
+	GLint loc = getUniformLocation(name);
+	glUniform3fv(loc, 5, glm::value_ptr(v[0]));
+}
+
+//-----------------------------------------------------------------------------
 // Sets a glm::vec4 shader uniform
 //-----------------------------------------------------------------------------
 void ShaderProgram::setUniform(const GLchar* name, const glm::vec4& v)

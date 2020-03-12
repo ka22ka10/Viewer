@@ -8,6 +8,7 @@ public:
 	Light();
 	Light(const glm::vec3& color);
 	virtual ~Light();
+	bool OnOff = true;
 
 	const glm::vec3& GetColor()  const;
 	void SetColor(const glm::vec3& color);

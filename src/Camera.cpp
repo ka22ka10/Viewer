@@ -97,10 +97,10 @@ void Camera::Zoom(const float factor)
 
 void Camera::SphericalRotate(const glm::vec2& sphericalDelta)
 {
-	glm::mat4x4 vAxisRotation = Utils::AxisRotationMatrix(up, sphericalDelta.x);
-	glm::mat4x4 uAxisRotation = Utils::AxisRotationMatrix(glm::cross(at - eye, up), sphericalDelta.y);
-	eye = uAxisRotation * vAxisRotation * glm::vec4(eye, 1);
-	UpdateProjectionMatrix();
+	//glm::mat4x4 vAxisRotation = Utils::AxisRotationMatrix(u, sphericalDelta.x);
+	//glm::mat4x4 uAxisRotation = Utils::AxisRotationMatrix(l, sphericalDelta.y);
+	//eye = uAxisRotation * vAxisRotation * glm::vec4(eye,1);
+	//SetCameraLookAt(eye, at, glm::vec3(0, 1, 0));
 }
 
 void Camera::SetAspectRatio(float aspectRatio)

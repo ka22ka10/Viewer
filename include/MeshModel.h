@@ -34,6 +34,11 @@ protected:
 	GLuint vao;
 
 public:
+	float KA;
+	float KD;
+	float KS;
+	int shine;
+
 	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textureCoords, const std::string& modelName = "");
 	virtual ~MeshModel();
 

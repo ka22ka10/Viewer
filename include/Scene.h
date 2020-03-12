@@ -22,7 +22,7 @@ private:
 
 public:
 	Scene();
-
+	std::shared_ptr<MeshModel> sphere;
 	void AddModel(const std::shared_ptr<MeshModel>& model);
 	int GetModelCount() const;
 	std::shared_ptr<MeshModel> GetModel(int index) const;

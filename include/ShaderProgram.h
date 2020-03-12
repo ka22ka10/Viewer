@@ -26,6 +26,7 @@ public:
 
 	GLuint getProgram() const;
 
+	void setUniform(const GLchar* name, const glm::vec3* v);
 	void setUniform(const GLchar* name, const glm::vec2& v);
 	void setUniform(const GLchar* name, const glm::vec3& v);
 	void setUniform(const GLchar* name, const glm::vec4& v);

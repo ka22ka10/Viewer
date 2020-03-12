@@ -27,6 +27,7 @@
 #include "PointLight.h"
 #include "Utils.h"
 
+
 int activeLight = 0;
 double zoomFactor = 1;
 int windowWidth = 1280;
@@ -64,19 +65,23 @@ int main(int argc, char **argv)
 	}
 
 	scene = std::make_shared<Scene>();
+
+	scene->sphere = Utils::LoadMeshModel("C:\\Users\\hamada\\mesh-viewer-ali-hamada\\Data\\sphere.obj");
+	scene->sphere->ScaleModel(0.15);
 	glm::vec3 eye = glm::vec3(0, 0, 10);
 	glm::vec3 at = glm::vec3(0, 0, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	Camera camera = Camera(eye, at, up, GetAspectRatio());
 	scene->AddCamera(camera);
 
-	scene->AddLight(std::make_shared<PointLight>(glm::vec3( 0, 0, 15), glm::vec3(1, 1, 1)));
-	scene->AddLight(std::make_shared<PointLight>(glm::vec3( 0, 5, 5),  glm::vec3(0, 0, 0)));
-	scene->AddLight(std::make_shared<PointLight>(glm::vec3(-5, 0, 0),  glm::vec3(0, 0, 0)));
+	scene->AddLight(std::make_shared<PointLight>(glm::vec3(5, 5, 0), glm::vec3(1, 1, 1)));
+	scene->AddLight(std::make_shared<PointLight>(glm::vec3(0, 0, 15), glm::vec3(1, 1, 1)));
+	scene->AddLight(std::make_shared<PointLight>(glm::vec3(0, 5, 5), glm::vec3(0, 0, 0)));
+	//	scene->AddLight(std::make_shared<PointLight>(glm::vec3(-5, 0, 0),  glm::vec3(0, 0, 0)));
 
 	Renderer renderer;
 	renderer.LoadShaders();
-	renderer.LoadTextures();
+	//	renderer.LoadTextures();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -105,7 +110,7 @@ int main(int argc, char **argv)
 	}
 
 	glfwTerminate();
-    return 0;
+	return 0;
 }
 
 static void GlfwErrorCallback(int error, const char* description)
@@ -145,7 +150,7 @@ GLFWwindow* SetupGlfwWindow(int windowWidth, int windowHeight, const char* windo
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	// Create an OpenGL 3.3 core, forward compatible context window
 	window = glfwCreateWindow(windowWidth, windowHeight, windowName, NULL, NULL);
@@ -291,10 +296,10 @@ void DrawImguiMenus()
 
 			delete items;
 
-			float sph_rot1=0;
+			float sph_rot1 = 0;
 			if (ImGui::SliderFloat("spherical rotate by UP-Axis", &sph_rot1, -0.1f, 10.1f))
 			{
-				scene->GetActiveCamera().SphericalRotate(glm::vec2(sph_rot1,0.0f));
+				scene->GetActiveCamera().SphericalRotate(glm::vec2(sph_rot1, 0.0f));
 			}
 
 			float sph_rot2 = 0;
@@ -310,9 +315,9 @@ void DrawImguiMenus()
 
 			if (newProjectionType == 0)
 			{
-				float fovy;
-				float zNear;
-				float zFar;
+				float fovy = scene->GetActiveCamera().GetFovy();
+				float zNear = scene->GetActiveCamera().GetNear();
+				float zFar = scene->GetActiveCamera().GetFar();
 
 				scene->GetActiveCamera().SwitchToPrespective();
 
@@ -389,6 +394,13 @@ void DrawImguiMenus()
 			{
 				scene->GetActiveModel()->SetColor(modelColor);
 			}
+			if (scene->GetModelCount() > 0)
+			{
+				ImGui::SliderFloat("KA", (float*)(&scene->GetActiveModel()->KA), 0.0f, 1.0f);
+				ImGui::SliderFloat("KD", (float*)(&scene->GetActiveModel()->KD), 0.0f, 1.0f);
+				ImGui::SliderFloat("KS", (float*)(&scene->GetActiveModel()->KS), 0.0f, 1.0f);
+				//				ImGui::InputInt("Specular Shinness", (int*)(&scene->GetActiveModel()->shine));
+			}
 
 			float scale = 1.0f;
 			if (ImGui::SliderFloat("Scale", &scale, 0.999f, 1.001f))
@@ -397,7 +409,7 @@ void DrawImguiMenus()
 				scene->GetActiveModel()->ScaleModel(scale);
 			}
 
-			float rotx=0.0f;
+			float rotx = 0.0f;
 			if (ImGui::SliderFloat("Rotate X", &rotx, -0.01f, 0.01f))
 			{
 				scene->GetActiveModel()->RotateXModel(rotx);
@@ -425,13 +437,13 @@ void DrawImguiMenus()
 			float translatey = 0.0f;
 			if (ImGui::SliderFloat("translate y", &translatey, -0.01f, 0.01f))
 			{
-				scene->GetActiveModel()->TranslateModel(glm::vec3(0.0f, translatey,  0.0f));
+				scene->GetActiveModel()->TranslateModel(glm::vec3(0.0f, translatey, 0.0f));
 			}
 
 			float translatez = 0.0f;
 			if (ImGui::SliderFloat("translate z", &translatez, -0.01f, 0.01f))
 			{
-				scene->GetActiveModel()->TranslateModel(glm::vec3( 0.0f, 0.0f, translatez));
+				scene->GetActiveModel()->TranslateModel(glm::vec3(0.0f, 0.0f, translatez));
 			}
 
 
@@ -464,34 +476,41 @@ void DrawImguiMenus()
 				items[i] = lightStrings[i].c_str();
 			}
 
-			
+
 			int light = activeLight;
 			ImGui::Combo("Active Light", &light, items, scene->GetLightCount());
 
-			
+
 			if (light != activeLight)
-				activeLight=light;
+				activeLight = light;
 
 			std::shared_ptr<PointLight> l = scene->GetLight(activeLight);
 
-			
-			///
+
+
 			glm::vec3 lightColor = l->GetColor();
 			if (ImGui::ColorEdit3("Light Color", (float*)&lightColor))
 			{
 				l->SetColor(lightColor);
 			}
-
 			glm::vec3 lightpos = l->position;
 			if (ImGui::InputFloat3("Light position", (float*)&lightpos))
 			{
 				l->position = lightpos;
 			}
 
+			if (l->OnOff) {
+				if (ImGui::Button("ON"))
+					l->OnOff = false;
+			}
+			else
+			{
+				if (ImGui::Button("OFF"))
+					l->OnOff = true;
 
+			}
 
 			delete items;
-
 
 		}
 

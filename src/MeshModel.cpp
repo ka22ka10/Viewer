@@ -11,7 +11,11 @@
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textureCoords, const std::string& modelName) :
 	modelTransform(1),
 	worldTransform(1),
-	modelName(modelName)
+	modelName(modelName),
+	KA(0.5f),
+	KD(0.5f),
+	KS(0.5f),
+	shine(1)
 {
 	worldTransform = glm::mat4x4(1);
 	std::random_device rd;
@@ -26,7 +30,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		for (int j = 0; j < 3; j++)
 		{
 			int vertexIndex = currentFace.GetVertexIndex(j) - 1;
-			
+
 			Vertex vertex;
 			vertex.position = vertices[vertexIndex];
 			vertex.normal = normals[vertexIndex];
